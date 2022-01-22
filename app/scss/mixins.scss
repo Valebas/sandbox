@@ -1,0 +1,163 @@
+@mixin font-face($font-family, $file-path, $weight: normal, $style: normal, $asset-pipeline: false) {
+  @font-face {
+    font-family: $font-family;
+    font-weight: $weight;
+    font-style: $style;
+
+    @if $asset-pipeline == true {
+      src: font-url("#{$file-path}.eot");
+      src: font-url("#{$file-path}.eot?#iefix") format("embedded-opentype"), font-url("#{$file-path}.woff") format("woff"), font-url("#{$file-path}.ttf") format("truetype");
+    }
+    @else {
+      src: url("#{$file-path}.eot");
+      src: url("#{$file-path}.eot?#iefix") format("embedded-opentype"), url("#{$file-path}.woff") format("woff"), url("#{$file-path}.ttf") format("truetype");
+    }
+  }
+}
+
+//Вычисляет подходящий процент под заданную, в vars, ширину контента в миксине container
+@function width($breakpoint, $content) {
+  $coefficient: $breakpoint / $content;
+  $result: 100% / $coefficient;
+  @return $result;
+}
+
+@mixin container() {
+  margin: 0 auto;
+  @media ($media-mob-xs) {
+    width: width($mob-xs, $content-mob-xs);
+  }
+  @media ($media-mob-s) {
+    width: width($mob-s, $content-mob-s);
+  }
+  @media ($media-mob-m) {
+    width: width($mob-m, $content-mob-m);
+  }
+  @media ($media-mob-landscape) {
+    width: width($mob-landscape, $content-mob-landscape);
+  }
+  @media ($media-tablet-sm) {
+    width: width($tablet-sm, $content-tablet-sm);
+  }
+  @media ($media-tablet-md) {
+    width: width($tablet-md, $content-tablet-md);
+  }
+  @media ($media-laptop-lg) {
+    width: width($laptop-lg, $content-laptop-lg);
+  }
+  @media ($media-desktop-xl) {
+    width: width($desktop-xl, $content-desktop-xl);
+  }
+  @media ($media-tv-xxl) {
+    width: width($tv-xxl, $content-tv-xxl);
+  }
+}
+
+// По сокращению "in" позволяет использовать конкретный медиа запрос без необходимости разворачивать все
+// По сокращению "inc" развернет все медиа запросы
+
+@mixin md($size, $type: min, $pixels: $mob-xs) {
+  @if $size == 'breakpoint-mob-xs' {
+    @media screen and ($type + -width: $mob-xs) {
+        @content;
+    }
+  }
+  @if $size == 'breakpoint-mob-s' {
+    @media screen and ($type + -width: $mob-s) {
+        @content;
+    }
+  }
+  @if $size == 'breakpoint-mob-m' {
+    @media screen and ($type + -width: $mob-m) {
+        @content;
+    }
+  }
+  @else if $size == 'breakpoint-mob-landscape' {
+    @media screen and ($type + -width: $mob-landscape) {
+        @content;
+    }
+  }
+  @else if $size == 'breakpoint-tablet-sm' {
+    @media screen and ($type + -width: $tablet-sm) {
+        @content;
+    }
+  }
+ @else if $size == 'breakpoint-tablet-md' {
+    @media screen and ($type + -width: $tablet-md) {
+        @content;
+    }
+  }
+  @else if $size == 'breakpoint-laptop-lg' {
+    @media screen and ($type + -width: $laptop-lg) {
+     @content;
+    }
+  }
+  @else if $size == 'breakpoint-desktop-xl' {
+    @media screen and ($type + -width: $desktop-xl) {
+     @content;
+    }
+  }
+  @else if $size == 'breakpoint-tv-xxl' {
+    @media screen and ($type + -width: $tv-xxl) {
+     @content;
+    }
+  }
+  @else {
+    @content;
+  }
+}
+
+// Ретина
+// Образец применения есть в scss slider bgi 1t/1w.
+// Для одного изображения без версий -md, -xl
+@mixin retina-bgi-one($file, $type, ) {
+  background: url($file + '.' + $type);
+  background-size: cover;
+  @media (-webkit-min-device-pixel-ratio: 1.25),
+         (min-resolution: 120dpi)
+  	{
+      background: url($file + '@2x.' + $type);
+      background-size: cover;
+  	}
+}
+
+// Ретина
+// Образец применения есть в scss slider bgi 2t/2w
+// Включает версии -md, -xl
+@mixin retina-bgi-multi($file, $type, ) {
+  background: url($file + '.' + $type);
+  background-size: cover;
+  @media (-webkit-min-device-pixel-ratio: 1.25),
+         (min-resolution: 120dpi)
+  	{
+      background: url($file + '@2x.' + $type);
+      background-size: cover;
+  	}
+  @media ($md) {
+    background: url($file + '-md' + '.' + $type);
+    background-size: cover;
+    @media (-webkit-min-device-pixel-ratio: 1.25),
+           (min-resolution: 120dpi)
+      {
+        background: url($file + '-md' + '@2x.' + $type);
+        background-size: cover;
+      }
+  }
+  @media ($xl) {
+    background: url($file + '-xl' + '.' + $type);
+    background-size: cover;
+    @media (-webkit-min-device-pixel-ratio: 1.25),
+           (min-resolution: 120dpi)
+      {
+        background: url($file + '-xl' + '@2x.' + $type);
+        background-size: cover;
+      }
+  }
+}
+
+// Шрифт
+// Fonts. Тоже самое только с REM вместо EM
+$browser-context: 16; // Default не менять
+@function rem($pixels, $context: $browser-context) {
+  @return #{$pixels/$context}rem;
+}
